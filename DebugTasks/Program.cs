@@ -1,6 +1,7 @@
 ﻿using System;
 using LeetCodeTasks;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace DebugTasks
 {
@@ -12,19 +13,27 @@ namespace DebugTasks
 
             User[] users = Init();
 
-            var sortedUser = users.OrderByDescending(u => u.Posts.Count());
-            var preLast = sortedUser.Skip(1).First();
-            double avarageAge = users.Average(u => u.Age);
-            var olderThen21 = users.Where(u => u.Age > 21);
-            var haventPosts = users.Where(u => u.Posts == null);
+            /* 
+             * 1 comment (user 1) = 'suka blyat mat ebal'
+             * 2 commetn (user 1) = 'святоша в чате'
+             * 
+             * List<string> avadaKedavra = new List<string>() {"suka", "blyat", "zalupa" ...(100)};
+             * "suka": List<User> - юзеры, которые употребляли это слово в комментариях
+             * "blyat": List<User>
+             *...
+             */
 
-            //найти у кого больше постов среди юзеров 2
+            List<string> blockListWords = new List<string>() { "suka", "blyat" };
+
+
+            //найти у кого больше постов среди юзеров 2 done
             //второй снизу по количесту постов 1 done
             //средний возраст юзера 1 done
             //найти всех юзеров которым больше чем 21 1 done
             //найти всех юзеров у которых нет постов 2 done
-            //найти юзера у которого в коментариях слово блять 3
-            //найти юзереров и все коментарии юзеров у которых есть слово блять 4
+
+            //найти юзереров и все коментарии юзеров у которых есть слово блять 4 done
+            //ключ текст коментария как 1 из возможных ключей done
 
             static void AddPost(string header, string textPost, User user)
             {
@@ -42,6 +51,7 @@ namespace DebugTasks
             {
                 User user = new User();
                 User user2 = new User();
+
 
                 user.Name = "vasya";
                 user2.Name = "kolya";
@@ -70,6 +80,27 @@ namespace DebugTasks
                 return new[] { user, user2 };
             }
 
+            User MorestPosts() => users.OrderBy(u => u.Posts.Count()).LastOrDefault();
+
+            User PreLast() => users.OrderBy(u => u.Posts.Count()).Skip(1).FirstOrDefault();
+
+            double AvarageAge() => users.Average(u => u.Age);
+
+            List<User> OlderThen21() => users.Where(u => u.Age > 21).ToList();
+
+            List<User> HaventPosts() => users.Where(u => u.Posts == null).ToList();
+
+            List<User> UsersConteinWordInComment(string badWord) => users.Where(u => u.Posts.Where(c => c.Coments.Where(t => t.TextComment.Contains(badWord)) != null) != null).ToList();
+
+            Dictionary<string, List<User>> BlockListMans(List<string> blockListWords)
+            {
+                Dictionary<string, List<User>> result = new Dictionary<string, List<User>>();
+                foreach(string badWord in blockListWords)
+                {
+                    result[badWord] = UsersConteinWordInComment(badWord);
+                }
+                return result;
+            }
         }
     }
 }
